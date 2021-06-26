@@ -1,0 +1,137 @@
+<script>
+	$(document).ready(function() {
+    
+    $('.changeItem').change(function(){
+        $('#generate').click();
+    });
+
+    $(document).keypress(function (e) {
+        var key = e.which;
+         if(key == 13)  // the enter key code
+         {
+            $('#generate').click();
+             return false;  
+          }
+    });
+    
+    $('#video-button').hide();
+    
+    var testing = false;
+    $('#generate').click(function(){
+        if(!testing){$("#answer").hide(); $("#show-answer").val("Show Answer");}
+        generate(parseInt($("#type").val()));       
+     });
+
+
+    $("#show-answer").click(function(){
+       if($("#answer").is(":hidden") ){
+          $("#answer").show();
+          $("#show-answer").val("Hide Answer");
+       } else{
+         $("#answer").hide();
+         $("#show-answer").val("Show Answer");
+        }
+    });
+    if(testing){ $("#answer").show();}
+    
+	});
+	function generate(type){
+       
+       var videoLinks = ["https://www.youtube.com/watch?v=DQczzQY53Zs",
+                         "https://www.youtube.com/watch?v=6ixw_qhY6s4",
+                         "https://www.youtube.com/watch?v=G7vhf-eZ6YE"];
+       
+       if(videoLinks[type-1].length != 0){ 
+         $("#videoLink"). attr("href", videoLinks[type-1]);
+         $('#video-button').show();
+       }
+       else{
+         $('#video-button').hide();
+       }
+       
+       var problem = "";
+       var answer = "";
+       var a,b,c,d,e;
+       $("#generated").html("");
+       $("#answer").html("");
+   
+       switch(type) {
+  ////////////////////// Fraction to Decimal and Percent ///////////////////////////////////////
+           case 1: 
+           a = random(1,25);
+           b = random(1,25);
+           c = formatDec(a/b,8);
+           d = formatDec(c,4);
+           e = formatDec(d*100,8);
+           
+           problem = "\\(\\cfrac{"+a+"}{"+b+"}\\)";
+           answer = "\\(\\cfrac{"+a+"}{"+b+"}";
+           
+           // simplified form of fraction
+           if(simplifyFrac(a,b).toString()!=("\\cfrac{"+a+"}{"+b+"}").toString() && simplifyFrac(a,b).toString()!=c){
+           
+              answer += "="+simplifyFrac(a,b);
+              
+           }
+           
+           // decimal
+           if(c.toString().length > 4){
+             
+             answer += "\\approx"+d;
+             // percent
+             answer += "\\approx"+e+"\\%";
+             
+           } else{
+           
+             answer += "="+c;
+             // percent
+             answer += "="+e+"\\%";
+           }
+           answer += "\\)";
+           
+           break;
+           
+           
+  ////////////////////// Decimal to Fraction and Percent ///////////////////////////////////////
+           case 2:
+           e = random(2,4); 
+           a = randomDec(0.01, 3, e);
+           var numDecimals = a.countDecimals(); // added in since e isn't always the number of decimals
+           b = formatDec(a*100,8);   // percent
+           c = "\\cfrac{"+formatDec(a*(10**numDecimals),8)+"}{"+(10**numDecimals)+"}"; // fraction
+           d = simplifyFrac(formatDec(a*(10**numDecimals),8),(10**numDecimals));  // fraction (simplified)
+           
+           problem = "\\("+a+"\\)";
+           answer = "\\("+a;
+           
+           if(d != c.toString()){
+           
+             answer += "="+c;
+           
+           }
+           
+           answer +="="+d+"="+b+"\\%\\)";
+           
+           break;
+ 
+ 
+  ////////////////////// Percent to Fraction and Decimal ///////////////////////////////////////
+           case 3:
+           e = random(2,4);
+           a = randomDec(0.01, 3, e);
+           b = formatDec(a*100,8);   // percent
+           c = "\\cfrac{"+formatDec(a*100,8)+"}{100}"; // fraction
+           
+           problem = "\\("+b+"\\%\\)";
+           answer = "\\("+b+"\\%="+c+"="+a+"\\)";
+           
+           break;
+       }
+            
+       $("#generated").html(problem);
+       $("#answer").html(doublesigns(answer));
+       renderMathInElement(document.body);
+       //MathJax.Hub.queue.Push(["Typeset",MathJax.Hub,"generated"]);
+       //MathJax.Hub.queue.Push(["Typeset",MathJax.Hub,"answer"]);
+	}
+</script>
